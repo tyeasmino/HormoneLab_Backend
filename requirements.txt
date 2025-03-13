@@ -4,8 +4,7 @@ Django
 django-allauth 
 django-cors-headers 
 django-environ 
-djangorestframework 
-psycopg2 
+djangorestframework  
 psycopg2-binary 
 python-dotenv 
 sqlparse 
