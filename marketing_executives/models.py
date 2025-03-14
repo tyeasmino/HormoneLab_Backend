@@ -57,19 +57,7 @@ class LabServices(models.Model):
     feni_rate = models.IntegerField()
     mkg_rate = models.IntegerField()
     ks_rate = models.IntegerField()
-
-    def get_rates_for_location(self, location_name):
-        location_rate_map = {
-            'Savar': self.sd_rate,
-            'Savar-2': self.sd2_rate,
-            'Narsingdi': self.nr_rate,
-            'Gazipur-1': self.tg_rate,
-        }
-        
-        location_rate = location_rate_map.get(location_name, None)       
-        return self.patient_rate, location_rate
-    
-    
+     
     def __str__(self):
         return f"{self.test_name} - {self.patient_rate}"
 

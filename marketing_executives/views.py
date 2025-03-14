@@ -9,15 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 class LabServiceViewSet(viewsets.ModelViewSet):
     queryset = LabServices.objects.all()
     serializer_class = LabServiceSerializer
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request  # Add the request to the context
-        return context
-
-# class MarketingExecutiveViewSet(viewsets.ModelViewSet):
-#     queryset = MarketingExecutive.objects.all()
-#     serializer_class = MarketingExecutiveSerializer
+ 
 
 class MarketingExecutiveViewSet(viewsets.ModelViewSet):
     serializer_class = MarketingExecutiveSerializer
