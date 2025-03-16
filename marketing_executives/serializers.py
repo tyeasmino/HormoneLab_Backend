@@ -14,15 +14,38 @@ class MarketingExecutiveSerializer(serializers.ModelSerializer):
         model = MarketingExecutive
         fields = '__all__'
     
-    def create(self, validate_data):
-        image_url = validate_data.pop('image', None)
+    def create(self, validated_data):
+        image_url = validated_data.pop('image', None)
+        location = validated_data.get('location', None)
 
-        marketingExecutive = MarketingExecutive.objects.create(**validate_data)
+        marketingExecutive = MarketingExecutive.objects.create(**validated_data)
+
+        # Set the location using the new method to update is_selected
+        if location:
+            marketingExecutive.set_location(location)
+
         if image_url:
             marketingExecutive.image = image_url
             marketingExecutive.save()
-        
+
         return marketingExecutive
+
+    def update(self, instance, validated_data):
+        image_url = validated_data.pop('image', None)
+        location = validated_data.get('location', None)
+
+        # Update the location using the new method to update is_selected
+        if location:
+            instance.set_location(location)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if image_url:
+            instance.image = image_url
+
+        instance.save()
+        return instance
 
 class DepositeSerializer(serializers.ModelSerializer):
     class Meta:

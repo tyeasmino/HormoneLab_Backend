@@ -71,6 +71,20 @@ class MarketingExecutive(models.Model):
     phone = models.CharField(max_length=11, null=True, blank=True)
 
 
+    def set_location(self, location):
+        # Unset the previously selected location (if any)
+        if self.location:
+            self.location.is_selected = False
+            self.location.save()
+
+        # Set the new location
+        self.location = location
+        self.location.is_selected = True
+        self.location.save()
+
+        self.save()
+
+
     def get_rates_for_location(self):
         if self.location:
             location_name = self.location.location_name  
