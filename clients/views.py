@@ -13,11 +13,17 @@ from rest_framework.decorators import action
 #     serializer_class = serializers.LocationSerializer
 
 
+
 class LocationViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.LocationSerializer
 
     def get_queryset(self):
         return models.Location.objects.filter(is_selected=False)
+
+
+class AllLocationViewSet(viewsets.ModelViewSet):
+    queryset = models.Location.objects.all()
+    serializer_class = serializers.LocationSerializer
 
 
 class HospitalViewSet(viewsets.ModelViewSet):
