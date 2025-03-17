@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Location, Hospital
+from .models import Location, Hospital, Reports
 
 # Register your models here.
 class LocationAdmin(admin.ModelAdmin):
@@ -8,3 +8,5 @@ class LocationAdmin(admin.ModelAdmin):
 
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Hospital)
+admin.site.register(Reports)
+

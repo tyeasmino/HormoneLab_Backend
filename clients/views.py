@@ -30,3 +30,8 @@ class HospitalViewSet(viewsets.ModelViewSet):
     queryset = models.Hospital.objects.all()
     serializer_class = serializers.HospitalSerializer
 
+
+class ReportViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = models.Reports.objects.all()
+    serializer_class = serializers.ReportsSerializer
