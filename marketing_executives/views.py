@@ -11,6 +11,11 @@ class LabServiceViewSet(viewsets.ModelViewSet):
     serializer_class = LabServiceSerializer
  
 
+class AllMarketingExecutiveViewSet(viewsets.ModelViewSet):
+    queryset = MarketingExecutive.objects.all()
+    serializer_class = MarketingExecutiveSerializer
+
+
 class MarketingExecutiveViewSet(viewsets.ModelViewSet):
     serializer_class = MarketingExecutiveSerializer
 
