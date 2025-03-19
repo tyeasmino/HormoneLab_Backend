@@ -8,12 +8,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 # Create your views here.
-# class LocationViewSet(viewsets.ModelViewSet):
-#     queryset = models.Location.objects.all()
-#     serializer_class = serializers.LocationSerializer
-
-
-
 class LocationViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.LocationSerializer
 

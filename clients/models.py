@@ -11,14 +11,15 @@ class Location(models.Model):
 
 
 class Reports(models.Model):
-    hospital = models.ForeignKey("hospital_authorities.HospitalAuthority", on_delete=models.DO_NOTHING)
+    location = models.ForeignKey("clients.Location", on_delete=models.DO_NOTHING, blank=True, null=True)
+    hospital = models.ForeignKey("hospital_authorities.HospitalAuthority", on_delete=models.DO_NOTHING, blank=True, null=True)
     report_name = models.CharField(max_length=100, blank=True, null=True)
     report_file = models.URLField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.created_at}: {self.report_name} report of {self.hospital.location.location_name} - {self.hospital.hostpital_name} hospital"
-    
+        target = f"{self.hospital.hospital_name} hospital" if self.hospital else f"{self.location.location_name} location"
+        return f"{self.created_at}: {self.report_name} report sent to {target}"
 
 
 
