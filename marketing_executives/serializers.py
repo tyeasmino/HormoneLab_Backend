@@ -8,6 +8,24 @@ class LabServiceSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class LocationBasedLabServiceSerializer(serializers.ModelSerializer):
+    rate = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LabServices
+        fields = [
+            'id', 'test_category', 'test_name', 'test_description',
+            'patient_rate', 'test_sample', 'test_reporting', 'rate'
+        ]
+
+    def get_rate(self, obj):
+        slug = self.context.get('slug')
+        if slug:
+            field_name = f"{slug}_rate"
+            return getattr(obj, field_name, None)
+        return None
+
+
 
 class MarketingExecutiveSerializer(serializers.ModelSerializer):
     class Meta:
