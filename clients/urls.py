@@ -5,7 +5,7 @@ from .import views
 router = DefaultRouter()
 router.register(r'all_locations', views.AllLocationViewSet, basename='all_locations')
 router.register(r'locations', views.LocationViewSet, basename='locations')
-router.register(r'reports', views.ReportViewSet)
+router.register(r'reports', views.ReportViewSet, basename="reports")
 router.register(r"user-reports", views.UserReportsViewSet, basename="user-reports") 
 
 
