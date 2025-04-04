@@ -20,12 +20,3 @@ class Reports(models.Model):
     def __str__(self):
         target = f"{self.hospital.hospital_name} hospital" if self.hospital else f"{self.location.location_name} location"
         return f"{self.created_at}: {self.report_name} report sent to {target}"
-
-
-
-class Hospital(models.Model):
-    location_name = models.ForeignKey(Location, on_delete=models.DO_NOTHING)
-    hostpital_name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.location_name} - {self.hostpital_name}" 

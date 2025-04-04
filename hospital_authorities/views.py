@@ -11,15 +11,15 @@ from django.contrib.auth.models import User
 class HospitalAuthorityViewSet(viewsets.ModelViewSet):
     queryset = HospitalAuthority.objects.all()
     serializer_class = HospitalAuthoritySerializer
-    permission_classes = [IsAuthenticated]  # Ensures only logged-in users can access
+    permission_classes = [IsAuthenticated]  
 
     # Get hospitals under logged-in user
     @action(detail=False, methods=['get'])
     def under_me(self, request):
-        user = request.user  # Get logged-in user
+        user = request.user  
         try:
             marketing_executive = MarketingExecutive.objects.get(user=user)
-            location_id = marketing_executive.location  # Get user's location
+            location_id = marketing_executive.location  
 
             hospitals = HospitalAuthority.objects.filter(location_id=location_id)
             serializer = self.get_serializer(hospitals, many=True)
