@@ -7,6 +7,9 @@ from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.timezone import localtime
+
+
 
 
 # Create your views here.
@@ -32,15 +35,24 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='today')
     def today_reports(self, request):
-        # Get today's date
-        today = timezone.now().date()
+        # Get current time in local timezone
+        now_local = localtime(timezone.now())
 
-        # Filter reports based on today's date
-        reports_today = models.Reports.objects.filter(created_at__date=today)
+        # Calculate the boundaries for today in the local timezone
+        today_start = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = now_local.replace(hour=23, minute=59, second=59, microsecond=999999)
+ 
+
+        # Filter reports based on local timezone's boundaries
+        reports_today = models.Reports.objects.filter(
+            created_at__gte=today_start,
+            created_at__lte=today_end
+        )
 
         # Serialize and return today's reports
         serializer = self.get_serializer(reports_today, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     
 
 
@@ -77,12 +89,26 @@ class UserReportsViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['get'], url_path='today')
     def today_reports(self, request):
         user = self.request.user
-        today = timezone.now().date()
+
+        # Get current time in local timezone
+        now_local = localtime(timezone.now())
+
+        # Calculate start and end of today in local timezone
+        today_start = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = now_local.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        # Debugging: Print the corrected start and end boundaries in the terminal
+        print(f"Today's start in local timezone: {today_start}")
+        print(f"Today's end in local timezone: {today_end}")
 
         # Marketing Executive Case
         try:
             marketing_executive = MarketingExecutive.objects.get(user=user)
-            reports_today = models.Reports.objects.filter(location=marketing_executive.location, created_at__date=today)
+            reports_today = models.Reports.objects.filter(
+                location=marketing_executive.location,
+                created_at__gte=today_start,
+                created_at__lte=today_end
+            )
             serializer = self.get_serializer(reports_today, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except MarketingExecutive.DoesNotExist:
@@ -92,10 +118,19 @@ class UserReportsViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             hospital_authority = HospitalAuthority.objects.get(user=user)
             if hospital_authority:
-                reports_today = models.Reports.objects.filter(hospital=hospital_authority, created_at__date=today)
+                reports_today = models.Reports.objects.filter(
+                    hospital=hospital_authority,
+                    created_at__gte=today_start,
+                    created_at__lte=today_end
+                )
                 serializer = self.get_serializer(reports_today, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
         except HospitalAuthority.DoesNotExist:
             pass  # If not a hospital authority, return empty queryset
 
         return Response([], status=status.HTTP_200_OK)  # Return empty list if no reports found
+
+    
+
+
+
