@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import localtime
 from django.http import HttpResponse
-import requests
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_str
 from datetime import datetime
