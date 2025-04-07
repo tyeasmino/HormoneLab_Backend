@@ -8,7 +8,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import localtime
-
+from django.http import HttpResponse
+import requests
+from django.shortcuts import get_object_or_404
+from django.utils.encoding import smart_str
+from datetime import datetime
+import os
 
 
 
@@ -52,6 +57,20 @@ class ReportViewSet(viewsets.ModelViewSet):
         # Serialize and return today's reports
         serializer = self.get_serializer(reports_today, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    @action(detail=True, methods=['patch'], url_path='toggle-signed')
+    def toggle_signed(self, request, pk=None):
+        try:
+            report = self.get_object()
+            report.signed = not report.signed
+            report.save()
+            serializer = self.get_serializer(report, context={"request": request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except models.Reports.DoesNotExist:
+            return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        
 
     
 
@@ -134,3 +153,25 @@ class UserReportsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+def download_report(request, report_id):
+    try:
+        report = models.Reports.objects.get(id=report_id)
+
+        file_url = report.report_file
+        response = requests.get(file_url)
+
+        if response.status_code != 200:
+            return HttpResponse("File could not be downloaded.", status=404)
+
+        file_content = response.content
+        current_date = datetime.now().strftime("%d-%m-%y")
+        report_name = report.report_name or "report"
+        ext = os.path.splitext(file_url)[1]  # Gets '.pdf' or '.docx'
+        filename = f"{current_date} {report_name}{ext}" 
+
+        res = HttpResponse(file_content, content_type='application/pdf')
+        res['Content-Disposition'] = f'attachment; filename="{smart_str(filename)}"'
+        return res
+
+    except models.Reports.DoesNotExist:
+        return HttpResponse("Report not found.", status=404)
