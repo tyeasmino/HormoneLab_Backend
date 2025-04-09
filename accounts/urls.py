@@ -11,4 +11,5 @@ urlpatterns = [
     path('user_details/', views.user_details, name="user_details"),  
     path('users/', views.all_users_details, name='all_users_details'),
     path('users/<int:user_id>/', views.userid_details, name='userid_details'),
+    path('users/<int:user_id>/delete/', views.delete_user_and_related, name='delete_user_and_related'),
 ]

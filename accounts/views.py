@@ -106,6 +106,27 @@ def user_details(request):
 
 
 
+@api_view(['DELETE'])
+def delete_user_and_related(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Delete token if exists
+    Token.objects.filter(user=user).delete()
+
+    # Delete related hospital authority if exists
+    HospitalAuthority.objects.filter(user=user).delete()
+
+    # Delete related marketing executive if exists
+    MarketingExecutive.objects.filter(user=user).delete()
+
+    # Finally, delete the user
+    user.delete()
+
+    return Response({"message": f"User {user_id} and related data deleted."}, status=status.HTTP_204_NO_CONTENT)
+
 
 
 @api_view(['GET'])

@@ -3,10 +3,18 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import HospitalAuthority
-from .serializers import HospitalAuthoritySerializer
+from .serializers import HospitalAuthoritySerializer, AllHospitalAuthoritySerializer
 from marketing_executives.models import MarketingExecutive
 from django.contrib.auth.models import User
 from rest_framework import status
+
+
+
+class AllHospitalAuthorityViewSet(viewsets.ModelViewSet):
+    queryset = HospitalAuthority.objects.all()
+    serializer_class = AllHospitalAuthoritySerializer
+
+
 
 class HospitalAuthorityViewSet(viewsets.ModelViewSet):
     queryset = HospitalAuthority.objects.all()

@@ -5,8 +5,13 @@ from .models import HospitalAuthority
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name']
+        fields = ['username', 'first_name', 'last_name']
 
+
+class AllHospitalAuthoritySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HospitalAuthority
+        fields = '__all__'
 
 
 class HospitalAuthoritySerializer(serializers.ModelSerializer):
