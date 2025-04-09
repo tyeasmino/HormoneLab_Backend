@@ -14,6 +14,25 @@ from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_str
 from datetime import datetime
 import os
+from rest_framework.parsers import MultiPartParser, FormParser
+
+ 
+from docx import Document
+from rest_framework.views import APIView 
+from collections import defaultdict
+from .serializers import UploadedReportSerializer
+import re
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
+
+
+
+
+
+
+
+
+
 
 
 
@@ -175,3 +194,73 @@ def download_report(request, report_id):
 
     except models.Reports.DoesNotExist:
         return HttpResponse("Report not found.", status=404)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class ReportUploadView(APIView):
+#     def post(self, request):
+#         serializer = serializers.ReportUploadSerializer(data=request.data)
+#         if serializer.is_valid():
+#             uploaded_file = request.FILES['file']
+
+#             result = upload(uploaded_file, resource_type="raw")
+#             file_url = result['secure_url']
+
+#             doc = Document(uploaded_file)
+
+#             slug_pages = defaultdict(list)
+#             current_page = []
+
+#             for para in doc.paragraphs:
+#                 text = para.text.strip()
+#                 if "P. ID" in text:
+#                     match = re.search(r"P\. ID\s*:?\s*([A-Z0-9/\-*]+)", text, re.IGNORECASE)
+#                     if match:
+#                         patient_id = match.group(1)
+#                         slug = re.split(r"[-/]", patient_id)[0].upper()
+#                         slug_pages[slug].append(current_page)
+#                         current_page = []
+#                 current_page.append(text)
+
+#             return Response({
+#                 "file_url": file_url,
+#                 "groups": {k: len(v) for k, v in slug_pages.items()}
+#             })
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class UploadFileView(APIView):
+    def post(self, request, *args, **kwargs):
+        file = request.FILES.get('file')
+        if file:
+            # Upload file to Cloudinary
+            upload_response = upload(file)
+            # Create a record in the database with the Cloudinary URL
+            uploaded_report = models.UploadedReport.objects.create(
+                file=upload_response['secure_url']
+            )
+            serializer = UploadedReportSerializer(uploaded_report)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)

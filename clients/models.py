@@ -1,4 +1,8 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
+
+
+
 
 # Create your models here.
 class Location(models.Model):
@@ -22,3 +26,25 @@ class Reports(models.Model):
     def __str__(self):
         target = f"{self.hospital.hospital_name} hospital" if self.hospital else f"{self.location.location_name} location"
         return f"{self.created_at}: {self.report_name} report sent to {target}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class UploadedReport(models.Model):
+    file = models.FileField(upload_to='reports/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Report {self.id} - {self.uploaded_at}"

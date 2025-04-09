@@ -12,4 +12,8 @@ router.register(r"user-reports", views.UserReportsViewSet, basename="user-report
 urlpatterns = [
     path('', include(router.urls)),
     path('download-report/<int:report_id>/', views.download_report, name='download_report'),
+
+ 
+
+    path('upload-report/', views.UploadFileView.as_view(), name='upload-report'),
 ]

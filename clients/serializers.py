@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Location, Reports
+from .models import Location, Reports, UploadedReport
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,3 +27,30 @@ class ReportsSerializer(serializers.ModelSerializer):
             report.save()
 
         return report
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class UploadedReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadedReport
+        fields = ['id', 'file', 'uploaded_at']
