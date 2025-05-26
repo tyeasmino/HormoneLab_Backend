@@ -91,6 +91,39 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return models.Reports.objects.all()
+    
+    @action(detail=False, methods=['get'], url_path='today')
+    def today_reports(self, request):
+        # Get current time in local timezone
+        now_local = localtime(timezone.now())
+
+        # Calculate the boundaries for today in the local timezone
+        today_start = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = now_local.replace(hour=23, minute=59, second=59, microsecond=999999)
+ 
+
+        # Filter reports based on local timezone's boundaries
+        reports_today = models.Reports.objects.filter(
+            created_at__gte=today_start,
+            created_at__lte=today_end
+        )
+
+        # Serialize and return today's reports
+        serializer = self.get_serializer(reports_today, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    @action(detail=True, methods=['patch'], url_path='toggle-signed')
+    def toggle_signed(self, request, pk=None):
+        try:
+            report = self.get_object()
+            report.signed = not report.signed
+            report.save()
+            serializer = self.get_serializer(report, context={"request": request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except models.Reports.DoesNotExist:
+            return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
     def send_report_email(self, report, is_update=False):
         location = report.location
@@ -147,6 +180,8 @@ class ReportViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         report = serializer.save()
         self.send_report_email(report, is_update=True)
+    
+
     
 
 
