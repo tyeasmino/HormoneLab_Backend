@@ -1,8 +1,10 @@
 from pathlib import Path
+
 import environ
+
 env = environ.Env()
 environ.Env.read_env()
-import os 
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +19,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
+ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app", "localhost"]
 
 LOGIN_URL = "https://hormonelab.vercel.app/login"
 
@@ -47,7 +49,8 @@ INSTALLED_APPS = [
     'contactUs',
     'clients',
     'hospital_authorities',
-    'marketing_executives'
+    'marketing_executives',
+    'doctor_report',
 ]
 
 
@@ -68,6 +71,7 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000", 
     "http://localhost:3000", 
     'http://localhost:5173',
     # "https://skillcrafter1.netlify.app"
@@ -148,8 +152,10 @@ EMAIL_HOST_PASSWORD = env("EMAIL_PASSWORD")
 
 
 import os
+
 import psycopg2
 from dotenv import load_dotenv
+
 load_dotenv()
 
 DATABASES = {
