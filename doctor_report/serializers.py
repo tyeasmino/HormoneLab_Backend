@@ -1,6 +1,7 @@
-from accounts.models import Role, UserRole
 from django.contrib.auth.models import User
 from rest_framework import serializers
+
+from accounts.models import Role, UserRole
 
 from .models import (BillPayment, DoctorProfile, DoctorRate, DoctorReport,
                      ReportType, SizeOption)
@@ -42,6 +43,12 @@ class DoctorRegistrationSerializer(serializers.ModelSerializer):
 
 
 class DoctorListSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+    email = serializers.EmailField(source='user.email')
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+
+
     class Meta:
         model = DoctorProfile
         fields = '__all__'
