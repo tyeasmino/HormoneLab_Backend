@@ -2,25 +2,28 @@ from datetime import date
 
 from django.db.models import Count, Q, Sum
 from django.utils import timezone
+from HormoneLab_Backend.permissions import IsSuperAdminOrDoctorOwner
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from HormoneLab_Backend.permissions import IsSuperAdminOrDoctorOwner
-
 from .models import (BillPayment, DoctorProfile, DoctorReport, ReportType,
                      SizeOption)
 from .serializers import (BillPaymentSerializer, DashboardReportSerializer,
-                          DoctorRegistrationSerializer, DoctorReportSerializer,
-                          ReportTypeSerializer, SizeOptionSerializer)
+                          DoctorListSerializer, DoctorRegistrationSerializer,
+                          DoctorReportSerializer, ReportTypeSerializer,
+                          SizeOptionSerializer)
 
 
 class DoctorRegistrationView(generics.CreateAPIView):
     queryset = DoctorProfile.objects.all()
     serializer_class = DoctorRegistrationSerializer
 
+class DoctorListView(generics.ListAPIView):
+    queryset = DoctorProfile.objects.all()
+    serializer_class = DoctorListSerializer
 
 class DoctorReportViewSet(viewsets.ModelViewSet):
     serializer_class = DoctorReportSerializer
