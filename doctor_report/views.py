@@ -25,17 +25,24 @@ class DoctorListView(generics.ListAPIView):
     queryset = DoctorProfile.objects.all()
     serializer_class = DoctorListSerializer
 
+
 class DoctorReportViewSet(viewsets.ModelViewSet):
     serializer_class = DoctorReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        # যদি doctor হয়
+        queryset = DoctorReport.objects.all()
+
+        doctor_id = self.request.query_params.get("doctor")
+        if doctor_id:
+            queryset = queryset.filter(doctor_id=doctor_id)
+
+        # যদি doctor নিজে লগইন করে থাকে
         if hasattr(user, 'doctor_profile'):
-            return DoctorReport.objects.filter(doctor=user.doctor_profile)
-        # অন্য admin/staff হলে সব দেখাবে
-        return DoctorReport.objects.all()
+            queryset = queryset.filter(doctor=user.doctor_profile)
+
+        return queryset
 
 
 class ReportTypeListView(generics.ListAPIView):
