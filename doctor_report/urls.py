@@ -2,7 +2,8 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import (BillPaymentViewSet, DoctorDashboardView, DoctorListView,
+from .views import (AdminReportsSummary, BillPaymentViewSet,
+                    DoctorDashboardView, DoctorListView,
                     DoctorRegistrationView, DoctorReportViewSet,
                     ReportTypeListView, SizeOptionListView)
 
@@ -18,6 +19,6 @@ urlpatterns = [
     path('report-types/', ReportTypeListView.as_view(), name='report-types'),
     path('report-sizes/', SizeOptionListView.as_view(), name='report-sizes'),
     path('dashboard/', DoctorDashboardView.as_view(), name='doctor-dashboard'),
-    # path('summary/', AdminReportsSummary.as_view(), name='doctor-reports-summary'), 
+    path('summary/', AdminReportsSummary.as_view(), name='doctor-reports-summary'), 
 ]
 

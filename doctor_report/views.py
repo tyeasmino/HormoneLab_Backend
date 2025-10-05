@@ -2,9 +2,10 @@ from datetime import date
 
 from django.db.models import Count, Q, Sum
 from django.utils import timezone
-from rest_framework import generics, permissions, status, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, generics, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -14,8 +15,8 @@ from .models import (BillPayment, DoctorProfile, DoctorReport, ReportType,
                      SizeOption)
 from .serializers import (BillPaymentSerializer, DashboardReportSerializer,
                           DoctorListSerializer, DoctorRegistrationSerializer,
-                          DoctorReportSerializer, ReportTypeSerializer,
-                          SizeOptionSerializer)
+                          DoctorReportCreateSerializer, DoctorReportSerializer,
+                          ReportTypeSerializer, SizeOptionSerializer)
 
 
 class DoctorRegistrationView(generics.CreateAPIView):
@@ -29,7 +30,20 @@ class DoctorListView(generics.ListAPIView):
 
 class DoctorReportViewSet(viewsets.ModelViewSet):
     serializer_class = DoctorReportSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsSuperAdminOrDoctorOwner]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['doctor', 'report_type', 'size_option', 'is_paid', 'signed', 'receive_date']
+    search_fields = ['report_id', 'patient_name', 'specimen']
+    ordering_fields = ['-receive_date', '-report_type']
+
+
+    @action(detail=False, methods=['post'], url_path='bulk-create')
+    def bulk_create(self, request):
+        serializer = DoctorReportCreateSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        reports = serializer.save() # 
+        return Response(DoctorReportSerializer(reports, many=True).data, status=status.HTTP_201_CREATED)
+
 
     def get_queryset(self):
         user = self.request.user
@@ -152,4 +166,31 @@ class BillPaymentViewSet(viewsets.ModelViewSet):
 
         return Response({"detail": "Payment approved successfully"}, status=status.HTTP_200_OK)
     
+    
+class AdminReportsSummary(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request): 
+        month = request.GET.get('month')
+        year = request.GET.get('year')
+        doctor_id = request.GET.get('doctor')
+
+        qs = DoctorReport.objects.all()
+        if month and year:
+            qs = qs.filter(receive_date__month=month, receive_date__year=year)
+        if doctor_id:
+            qs = qs.filter(doctor_id=doctor_id)
+
+        
+        summary = qs.values(
+            'doctor__user__username',
+            'doctor__user__first_name',
+            'doctor__user__last_name'
+        ).annotate(
+            total_reports=Count('id'),
+            total_amount=Sum('bill_amount'),
+            total_paid=Sum('bill_amount', filter=Q(is_paid=True)),
+            total_due=Sum('bill_amount', filter=Q(is_paid=False))
+        )
+        return Response(list(summary))
     

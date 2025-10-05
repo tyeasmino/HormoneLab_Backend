@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'dj_rest_auth',  
     'allauth', 
     'allauth.account',
+    'django_filters',
 
 
     # local 
