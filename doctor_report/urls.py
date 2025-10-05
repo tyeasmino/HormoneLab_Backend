@@ -18,5 +18,6 @@ urlpatterns = [
     path('report-types/', ReportTypeListView.as_view(), name='report-types'),
     path('report-sizes/', SizeOptionListView.as_view(), name='report-sizes'),
     path('dashboard/', DoctorDashboardView.as_view(), name='doctor-dashboard'),
+    # path('summary/', AdminReportsSummary.as_view(), name='doctor-reports-summary'), 
 ]
 

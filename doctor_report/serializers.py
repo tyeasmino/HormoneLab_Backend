@@ -142,3 +142,23 @@ class BillPaymentSerializer(serializers.ModelSerializer):
 
 
 
+class DoctorReportBulkCreateSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        objs = []
+        for item in validated_data:
+            obj = DoctorReport(**item)
+            obj.save()  # To trigger bill_amount calculation
+            objs.append(obj)
+        return objs
+
+
+class DoctorReportCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DoctorReport
+        fields = [
+            "doctor", "report_id", "patient_name", "patient_age", "specimen", "report_type", "size_option", "receive_date",
+            "signed", "signed_at", "is_paid", "doctor_comment", "bill_amount"
+        ]
+        list_serializer_class = DoctorReportBulkCreateSerializer
+    
+
