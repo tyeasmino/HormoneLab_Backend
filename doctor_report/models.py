@@ -119,15 +119,15 @@ class DoctorReport(models.Model):
 
         extra = self.size_option.extra_fee if self.size_option else 0
 
-        if self.bill_amount is None:  # only calculate if not set
-            try:
-                custom = DoctorRate.objects.get(doctor=self.doctor, report_type=self.report_type)
-                base_price = custom.custom_price
-            except DoctorRate.DoesNotExist:
-                base_price = self.report_type.base_price
 
-            self.bill_amount = base_price + extra
-        # else: bill_amount already set, don't recalc
+        try:
+            custom = DoctorRate.objects.get(doctor=self.doctor, report_type=self.report_type)
+            base_price = custom.custom_price
+        except DoctorRate.DoesNotExist:
+            base_price = self.report_type.base_price
+
+        self.bill_amount = base_price + extra
+
 
         super().save(*args, **kwargs)
 
