@@ -142,7 +142,7 @@ class BillPaymentSerializer(serializers.ModelSerializer):
 
 
 
-class DoctorReportBulkCreateSerializer(serializers.ModelSerializer):
+class DoctorReportBulkCreateSerializer(serializers.ListSerializer):
     def create(self, validated_data):
         objs = []
         for item in validated_data:
