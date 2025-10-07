@@ -50,8 +50,22 @@ class DoctorReportViewSet(viewsets.ModelViewSet):
         queryset = DoctorReport.objects.all()
 
         doctor_id = self.request.query_params.get("doctor")
+        month = self.request.query_params.get("month")
+        year = self.request.query_params.get("year")
         if doctor_id:
             queryset = queryset.filter(doctor_id=doctor_id)
+        
+        if month:
+            try:
+                queryset = queryset.filter(receive_date__month=int(month))
+            except ValueError:
+                pass
+        
+        if year:
+            try:
+                queryset = queryset.filter(receive_date__year=int(year))
+            except ValueError:
+                pass
 
         # যদি doctor নিজে লগইন করে থাকে
         if hasattr(user, 'doctor_profile'):
