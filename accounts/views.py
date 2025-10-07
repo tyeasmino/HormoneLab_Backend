@@ -14,6 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from doctor_report.models import DoctorProfile as Doctor
 from hospital_authorities.models import HospitalAuthority
 from marketing_executives.models import MarketingExecutive
 
@@ -101,6 +102,13 @@ def user_details(request):
         data['me'] = me.id
     except MarketingExecutive.DoesNotExist: 
         data['me'] = None 
+
+    
+    try:
+        dr = Doctor.objects.get(user=request.user)
+        data['dr'] = dr.id
+    except Doctor.DoesNotExist:
+        data['dr'] = None
     
     return Response(data)
 
